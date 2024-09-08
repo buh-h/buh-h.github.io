@@ -1,0 +1,19 @@
+#board {
+    display: grid;
+    grid-template-columns: repeat(8, 160px);
+    grid-gap: 2px;
+    width: fit-content;
+    margin: 20px auto;
+}
+
+.tile {
+    width: 160px;
+    height: 160px;
+    background-size: cover;
+    cursor: pointer;
+}
+
+.tile.disabled {
+    cursor: not-allowed;
+}
+
