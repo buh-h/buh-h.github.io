@@ -1,19 +1,58 @@
 #board {
     display: grid;
-    grid-template-columns: repeat(8, 160px);
-    grid-gap: 2px;
+    grid-template-columns: repeat(8, 40px);
+    grid-template-rows: repeat(8, 40px);
     width: fit-content;
     margin: 20px auto;
 }
 
 .tile {
-    width: 160px;
-    height: 160px;
+    width: 40px;
+    height: 40px;
     background-size: cover;
     cursor: pointer;
+    border: 0px;
 }
 
-.tile.disabled {
-    cursor: not-allowed;
+.tile.unclear {
+    background-image: url('images/cells/cellup.svg');
 }
-
+.tile.empty {
+    background-image: url('images/cells/celldown.svg');
+}
+.tile.mine {
+    background-image: url('images/cells/cellmine.svg');
+}
+.tile.flag {
+    background-image: url('images/cells/cellflag.svg');
+}
+.tile.false-mine {
+    background-image: url('images/cells/falsemine.svg');
+}
+.tile.false-clear {
+    background-image: url('images/cells/blast.svg');
+}
+.tile.num1 {
+    background-image: url('images/cells/cell1.svg');
+}
+.tile.num2 {
+    background-image: url('images/cells/cell2.svg');
+}
+.tile.num3 {
+    background-image: url('images/cells/cell3.svg');
+}
+.tile.num4 {
+    background-image: url('images/cells/cell4.svg');
+}
+.tile.num5 {
+    background-image: url('images/cells/cell5.svg');
+}
+.tile.num6 {
+    background-image: url('images/cells/cell6.svg');
+}
+.tile.num7 {
+    background-image: url('images/cells/cell7.svg');
+}
+.tile.num8 {
+    background-image: url('images/cells/cell8.svg');
+}
