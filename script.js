@@ -6,6 +6,8 @@ let puzzleList = [];
 let board = Array.from({ length: Y_DIMENSION }, () => Array(X_DIMENSION).fill(null));
 let clearList = [];
 let minesList = [];
+let userCleared = [];
+let userFlagged = [];
 
 function updateVisibleBoard(state) {
     boardContainer.innerHTML = "";
@@ -15,15 +17,20 @@ function updateVisibleBoard(state) {
             button.classList.add("tile");
             button.dataset.y = y;
             button.dataset.x = x;
+            // Adds the appropriate class based on board value
             switch (board[y][x]) {
                 case -3:
                     button.classList.add("flag");
                     break;
                 case -1:
                     button.classList.add("unclear");
+                    button.addEventListener('mousedown', handleTileClick);
+                    button.addEventListener(`contextmenu`, (e) => {
+                        e.preventDefault();
+                    });
                     break;
                 case 0:
-                    button.classList.add("empty");
+                    button.classList.add("clear");
                     break;
                 default:
                     button.classList.add(`num${board[y][x]}`);
@@ -55,6 +62,7 @@ async function readFile() {
 }
 
 function loadRandomBoard() {
+
     if (puzzleList.length == 0) {
         console.error('puzzleList is empty. Cannot load a random board.');
         return;
@@ -75,29 +83,78 @@ function loadRandomBoard() {
     const clearIndex = randomPuzzleIndex * 3 + 2;
     const clearPairs = puzzleList[clearIndex].trim().split(') (').map(pair => pair.replace(/[()]/g, ''));
     clearList = clearPairs.map(pair => {
-        const [x, y] = pair.split(',').map(Number);
-        return [x, y];
+        const [y, x] = pair.split(',').map(Number);
+        return [y, x];
     });
+
     // Parse the mine tiles and store it
     minesList = [];
     const minesIndex = randomPuzzleIndex * 3 + 3;
     const minePairs = puzzleList[minesIndex].trim().split(') (').map(pair => pair.replace(/[()]/g, ''));
     minesList = minePairs.map(pair => {
-        const [x, y] = pair.split(',').map(Number);
-        return [x, y];
+        const [y, x] = pair.split(',').map(Number);
+        return [y, x];
     });
-
-    console.log("Clear", puzzleList[clearIndex]);
-    console.log("Mines", puzzleList[minesIndex]);
 }
 
 function initializeScreen() {
 
 }
+
+function handleTileClick(event) {
+    event.preventDefault(); 
+
+    const tile = event.target;
+    const y = parseInt(tile.dataset.y);
+    const x = parseInt(tile.dataset.x);
+    switch (event.button) {
+        case 0:
+            if (tile.classList.contains('placed-clear')) {
+                tile.classList.remove('placed-clear');
+                const index = userCleared.findIndex(point => 
+                        point[0] == y && point[1] == x);
+                userCleared.splice(index, 1);
+            } 
+            else if (tile.classList.contains('placed-flag')){
+                tile.classList.remove('placed-flag');
+                const index = userFlagged.findIndex(point => 
+                        point[0] == y && point[1] == x);
+                userFlagged.splice(index, 1);
+
+                tile.classList.add('placed-clear');
+                userCleared.push([y, x]);
+            } 
+            else {
+                tile.classList.add('placed-clear');
+                userCleared.push([y, x]);
+            }
+            break;
+        case 2:
+            if (tile.classList.contains('placed-flag')) {
+                tile.classList.remove('placed-flag');
+                const index = userFlagged.findIndex(point => 
+                    point[0] == y && point[1] == x);
+                userFlagged.splice(index, 1);
+            } 
+            else if (tile.classList.contains('placed-clear')) {
+                tile.classList.remove('placed-clear');
+                const index = userCleared.findIndex(point => 
+                        point[0] == y && point[1] == x);
+                userCleared.splice(index, 1);
+
+                tile.classList.add('placed-flag');
+                userFlagged.push([y, x]);
+            } 
+            else {
+                tile.classList.add('placed-flag');
+                userFlagged.push([y, x]);
+            }
+            break;
+    }
+}
+
 window.addEventListener('DOMContentLoaded', async (event) => {
     await readFile();
     loadRandomBoard();
-    console.log(clearList);
-    console.log(minesList);
     updateVisibleBoard();
 });

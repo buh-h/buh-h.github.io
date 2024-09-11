@@ -12,19 +12,30 @@
     background-size: cover;
     cursor: pointer;
     border: 0px;
+    pointer-events: auto;
 }
 
 .tile.unclear {
     background-image: url('images/cells/cellup.svg');
 }
-.tile.empty {
+.tile.clear {
     background-image: url('images/cells/celldown.svg');
 }
 .tile.mine {
     background-image: url('images/cells/cellmine.svg');
 }
+.tile.unclear.placed-flag {
+    background-image: url('images/cells/cellflag.svg');
+    outline: 5px solid red;
+    outline-offset: -5px;
+}
 .tile.flag {
     background-image: url('images/cells/cellflag.svg');
+}
+.tile.unclear.placed-clear {
+    background-image: url('images/cells/celldown.svg');
+    outline: 5px solid seagreen;
+    outline-offset: -5px;;
 }
 .tile.false-mine {
     background-image: url('images/cells/falsemine.svg');
