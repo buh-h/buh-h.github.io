@@ -49,6 +49,48 @@ body {
     pointer-events: auto;
 }
 
+.tile.correct {
+    outline: 5px solid seagreen;
+    outline-offset: -5px;
+}
+
+.tile.incorrect {
+    outline: 5px solid red;
+    outline-offset: -5px;
+}
+
+.tile.unclear.blast {
+    background-image: url('images/cells/blast.svg');
+}
+
+.tile.unclear.placed-flag {
+    background-image: url('images/cells/cellflag.svg');
+    background-color: rgba(255, 0, 0, 0.25); 
+    background-blend-mode: overlay;
+    /* outline: 5px solid red;
+    outline-offset: -5px; */
+}
+
+.tile.unclear.placed-clear {
+    background-image: url('images/cells/cellup.svg');
+    background-color: rgba(0, 255, 0, 0.25); 
+    background-blend-mode: overlay;
+    /* outline: 5px solid seagreen;
+    outline-offset: -5px; */
+    
+}
+
+.tile.unclear.solution-clear {
+    background-image: url('images/cells/celldown.svg');
+    background-color: rgba(0, 255, 0, 0.2); 
+    background-blend-mode: overlay;
+}
+.tile.unclear.solution-mine {
+    background-image: url('images/cells/cellmine.svg');
+    background-color: rgba(255, 0, 0, 0.2); 
+    background-blend-mode: overlay;
+}
+
 .tile.unclear {
     background-image: url('images/cells/cellup.svg');
 }
@@ -58,18 +100,8 @@ body {
 .tile.mine {
     background-image: url('images/cells/cellmine.svg');
 }
-.tile.unclear.placed-flag {
-    background-image: url('images/cells/cellflag.svg');
-    outline: 5px solid red;
-    outline-offset: -5px;
-}
 .tile.flag {
     background-image: url('images/cells/cellflag.svg');
-}
-.tile.unclear.placed-clear {
-    background-image: url('images/cells/celldown.svg');
-    outline: 5px solid seagreen;
-    outline-offset: -5px;;
 }
 .tile.false-mine {
     background-image: url('images/cells/falsemine.svg');

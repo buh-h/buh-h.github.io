@@ -1,7 +1,7 @@
 const Y_DIMENSION = 8;
 const X_DIMENSION = 8;
 
-const boardContainer = document.getElementById('board');
+//const boardContainer = document.getElementById('board');
 let puzzleList = [];
 let board = Array.from({ length: Y_DIMENSION }, () => Array(X_DIMENSION).fill(null));
 let clearList = [];
@@ -10,6 +10,7 @@ let userCleared = [];
 let userFlagged = [];
 
 function updateVisibleBoard(state) {
+    const boardContainer = document.getElementById('board');
     boardContainer.innerHTML = "";
     for (let y = 0; y < Y_DIMENSION; y++) {
         for (let x = 0; x < X_DIMENSION; x++) {
@@ -55,7 +56,7 @@ async function readFile() {
         const response = await fetch('puzzles.txt');
         const data = await response.text(); 
         puzzleList = data.split('\n'); 
-        console.log("Loaded File");
+        // console.log("Loaded File");
     } catch (error) {
         console.error('Error fetching file:', error);
     }
@@ -67,6 +68,10 @@ function loadRandomBoard() {
         console.error('puzzleList is empty. Cannot load a random board.');
         return;
     }
+
+    userCleared = [];
+    userFlagged = [];
+
     const numPuzzles = puzzleList[0];
     const randomPuzzleIndex = Math.floor(Math.random() * numPuzzles);
 
@@ -82,23 +87,25 @@ function loadRandomBoard() {
     clearList = [];
     const clearIndex = randomPuzzleIndex * 3 + 2;
     const clearPairs = puzzleList[clearIndex].trim().split(') (').map(pair => pair.replace(/[()]/g, ''));
-    clearList = clearPairs.map(pair => {
-        const [y, x] = pair.split(',').map(Number);
-        return [y, x];
-    });
+    if (puzzleList[clearIndex].length != 0) {
+        clearList = clearPairs.map(pair => {
+            const [y, x] = pair.split(',').map(Number);
+            return [y, x];
+        });
+    }   
 
     // Parse the mine tiles and store it
     minesList = [];
     const minesIndex = randomPuzzleIndex * 3 + 3;
     const minePairs = puzzleList[minesIndex].trim().split(') (').map(pair => pair.replace(/[()]/g, ''));
-    minesList = minePairs.map(pair => {
-        const [y, x] = pair.split(',').map(Number);
-        return [y, x];
-    });
-}
+    if (puzzleList[minesIndex].length != 0) {
+        minesList = minePairs.map(pair => {
+            const [y, x] = pair.split(',').map(Number);
+            return [y, x];
+        });
+    }
 
-function initializeScreen() {
-
+    updateVisibleBoard();
 }
 
 function handleTileClick(event) {
@@ -151,10 +158,100 @@ function handleTileClick(event) {
             }
             break;
     }
+
+    //console.log(userCleared, userFlagged);
+}
+
+function getTileAt(y, x) {
+    const tile = document.querySelector(`.tile[data-y="${y}"][data-x="${x}"]`);
+    return tile;
+}
+
+function clearUserInput() {
+    userCleared.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.remove('placed-clear', 'correct', 'incorrect', 'blast');
+    });
+    userCleared = [];
+    userFlagged.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.remove('placed-flag', 'correct', 'incorrect');
+    });
+    userFlagged = [];
+
+    clearList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.remove('solution-clear', 'correct', 'incorrect');
+    });
+    minesList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.remove('solution-mine', 'correct', 'incorrect');
+    });
+
+}
+
+function revealSolution() {
+    clearUserInput();
+    clearList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.add('solution-clear');
+    });
+    minesList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        tile.classList.add('solution-mine');
+    });
+}
+
+function checkUserAnswer() {
+    clearList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        if (!userCleared.some(user => user[0] == point[0] && user[1] == point[1])) {
+            //tile.classList.add('solution-clear');
+            tile.classList.add('incorrect');
+        } else {
+            tile.classList.add('correct');
+        }
+    });
+    minesList.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        if (!userFlagged.some(user => user[0] == point[0] && user[1] == point[1])) {
+            tile.classList.add('solution-mine', 'incorrect');
+        } else {
+            tile.classList.add('correct');
+        }
+    });
+
+    userCleared.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        if (!clearList.some(user => user[0] == point[0] && user[1] == point[1])) {
+            tile.classList.add('incorrect');
+        } 
+        if (minesList.some(user => user[0] == point[0] && user[1] == point[1])) {
+            tile.classList.remove('solution-mine', 'placed-clear');
+            tile.classList.add('blast');
+        }
+    });
+    userFlagged.forEach(point => {
+        const tile = getTileAt(point[0], point[1]);
+        if (!minesList.some(user => user[0] == point[0] && user[1] == point[1])) {
+            tile.classList.add('incorrect');
+        }
+    });
+
+
 }
 
 window.addEventListener('DOMContentLoaded', async (event) => {
+    // Setup for minesweeper board
     await readFile();
     loadRandomBoard();
-    updateVisibleBoard();
+
+    const resetButton = document.getElementById('reset');
+    resetButton.addEventListener('click', clearUserInput);
+    const checkButton = document.getElementById('check');
+    checkButton.addEventListener('click', checkUserAnswer);
+    const solutionButton = document.getElementById('solution');
+    solutionButton.addEventListener('click', revealSolution);
+    const nextButton = document.getElementById('next');
+    nextButton.addEventListener('click', loadRandomBoard);
 });
