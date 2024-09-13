@@ -41,6 +41,17 @@ function updateVisibleBoard(state) {
             boardContainer.appendChild(button);
         }
     }
+    
+    userCleared = [];
+    userFlagged = [];
+
+    // Enables some buttons to be clicked again
+    const checkButton = document.getElementById('check');
+    checkButton.style.pointerEvents = 'auto';
+    checkButton.style.opacity = '1.0';
+    const solutionButton = document.getElementById('solution');
+    solutionButton.style.pointerEvents = 'auto';
+    solutionButton.style.opacity = '1.0';
 }
 
 async function readFile() {
@@ -68,9 +79,6 @@ function loadRandomBoard() {
         console.error('puzzleList is empty. Cannot load a random board.');
         return;
     }
-
-    userCleared = [];
-    userFlagged = [];
 
     const numPuzzles = puzzleList[0];
     const randomPuzzleIndex = Math.floor(Math.random() * numPuzzles);
@@ -159,7 +167,7 @@ function handleTileClick(event) {
             break;
     }
 
-    //console.log(userCleared, userFlagged);
+    console.log(userCleared, userFlagged);
 }
 
 function getTileAt(y, x) {
@@ -167,31 +175,24 @@ function getTileAt(y, x) {
     return tile;
 }
 
-function clearUserInput() {
-    userCleared.forEach(point => {
-        const tile = getTileAt(point[0], point[1]);
-        tile.classList.remove('placed-clear', 'correct', 'incorrect', 'blast');
+function disableButtons() {
+    // Disables all board buttons
+    const boardContainer = document.getElementById('board');
+    const buttons = boardContainer.querySelectorAll('button');
+    buttons.forEach(button => {
+        button.disabled = true;
     });
-    userCleared = [];
-    userFlagged.forEach(point => {
-        const tile = getTileAt(point[0], point[1]);
-        tile.classList.remove('placed-flag', 'correct', 'incorrect');
-    });
-    userFlagged = [];
-
-    clearList.forEach(point => {
-        const tile = getTileAt(point[0], point[1]);
-        tile.classList.remove('solution-clear', 'correct', 'incorrect');
-    });
-    minesList.forEach(point => {
-        const tile = getTileAt(point[0], point[1]);
-        tile.classList.remove('solution-mine', 'correct', 'incorrect');
-    });
-
+    const checkButton = document.getElementById('check');
+    checkButton.style.pointerEvents = 'none';
+    checkButton.style.opacity = '0.5';
+    const solutionButton = document.getElementById('solution');
+    solutionButton.style.pointerEvents = 'none';
+    solutionButton.style.opacity = '0.5';
+    
 }
 
 function revealSolution() {
-    clearUserInput();
+    updateVisibleBoard();
     clearList.forEach(point => {
         const tile = getTileAt(point[0], point[1]);
         tile.classList.add('solution-clear');
@@ -200,6 +201,7 @@ function revealSolution() {
         const tile = getTileAt(point[0], point[1]);
         tile.classList.add('solution-mine');
     });
+    disableButtons();
 }
 
 function checkUserAnswer() {
@@ -215,7 +217,8 @@ function checkUserAnswer() {
     minesList.forEach(point => {
         const tile = getTileAt(point[0], point[1]);
         if (!userFlagged.some(user => user[0] == point[0] && user[1] == point[1])) {
-            tile.classList.add('solution-mine', 'incorrect');
+            tile.classList.add('mine', 'incorrect');
+            tile.style.backgroundcolor = 'rgba(255, 0, 0, 0)'
         } else {
             tile.classList.add('correct');
         }
@@ -237,7 +240,7 @@ function checkUserAnswer() {
             tile.classList.add('incorrect');
         }
     });
-
+    disableButtons();
 
 }
 
@@ -247,7 +250,7 @@ window.addEventListener('DOMContentLoaded', async (event) => {
     loadRandomBoard();
 
     const resetButton = document.getElementById('reset');
-    resetButton.addEventListener('click', clearUserInput);
+    resetButton.addEventListener('click', updateVisibleBoard);
     const checkButton = document.getElementById('check');
     checkButton.addEventListener('click', checkUserAnswer);
     const solutionButton = document.getElementById('solution');

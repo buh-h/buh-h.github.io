@@ -63,6 +63,10 @@ body {
     background-image: url('images/cells/blast.svg');
 }
 
+.tile.unclear.mine {
+    background-image: url('images/cells/cellmine.svg');
+}
+
 .tile.unclear.placed-flag {
     background-image: url('images/cells/cellflag.svg');
     background-color: rgba(255, 0, 0, 0.25); 
