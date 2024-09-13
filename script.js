@@ -114,6 +114,9 @@ function loadRandomBoard() {
     }
 
     updateVisibleBoard();
+    console.log(puzzleList[boardIndex]);
+    console.log(puzzleList[clearIndex]);
+    console.log(puzzleList[minesIndex]);
 }
 
 function handleTileClick(event) {
@@ -167,7 +170,7 @@ function handleTileClick(event) {
             break;
     }
 
-    console.log(userCleared, userFlagged);
+    //console.log(userCleared, userFlagged);
 }
 
 function getTileAt(y, x) {
@@ -202,6 +205,7 @@ function revealSolution() {
         tile.classList.add('solution-mine');
     });
     disableButtons();
+    console.log(clearList, minesList);
 }
 
 function checkUserAnswer() {
@@ -241,6 +245,8 @@ function checkUserAnswer() {
         }
     });
     disableButtons();
+
+    console.log(clearList, minesList);
 
 }
 
